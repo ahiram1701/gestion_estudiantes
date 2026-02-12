@@ -1,14 +1,49 @@
 <?php
-// Se incluye la clase Estudiante
 require_once "Estudiante.php";
 
-// Instanciación de objetos
-$estudiante1 = new Estudiante(95548, "Alberto Saucedo", "Programación Orientada a Objetos", "A");
-$estudiante2 = new Estudiante(95549, "Hiram Guajardo", "Bases de Datos Relacionales", "B");
+$estudiante = null;
 
-// Mostrar información de los estudiantes
-echo "<h2>Información de Estudiantes</h2>";
-echo $estudiante1->mostrarInfo();
-echo "<hr>";
-echo $estudiante2->mostrarInfo();
+// Si se envió el formulario
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    // Recibir datos del formulario
+    $matricula = $_POST["matricula"];
+    $nombre = $_POST["nombre"];
+    $materia = $_POST["materia"];
+    $grupo = $_POST["grupo"];
+
+    // Crear nuevo objeto
+    $estudiante = new Estudiante($matricula, $nombre, $materia, $grupo);
+}
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestión de Estudiantes</title>
+</head>
+<body>
+
+<h2>Crear nuevo estudiante</h2>
+
+<form method="POST">
+    Matrícula: <input type="number" name="matricula" required><br><br>
+    Nombre: <input type="text" name="nombre" required><br><br>
+    Materia: <input type="text" name="materia" required><br><br>
+    Grupo: <input type="text" name="grupo" required><br><br>
+    
+    <button type="submit">Crear</button>
+</form>
+
+<hr>
+
+<?php
+// Si ya existe un objeto, mostrarlo
+if ($estudiante != null) {
+    echo "<h3>Estudiantes:</h3>";
+    echo $estudiante->mostrarInfo();
+}
+?>
+
+</body>
+</html>
