@@ -1,6 +1,7 @@
 <?php
-// Clase Estudiante. Representa a un estudiante con sus datos básicos
+// Clase Estudiante. Representa a un estudiante con sus datos atributos y métodos
 class Estudiante {
+
     // Atributos
     private $matricula;
     private $nombre;
@@ -15,14 +16,19 @@ class Estudiante {
         $this->grupo = $grupo;
     }
 
-    // Método para obtener información del estudiante
-    public function mostrarInfo() {
-        return "Matrícula: $this->matricula <br>
-                Nombre: $this->nombre <br>
-                Materia: $this->materia <br>
-                Grupo: $this->grupo <br>";
+    public function getNombre() {
+        return $this->nombre;
     }
 
-   
+    public function getMatricula() {
+        return $this->matricula;
+    }
+
+    public function getMateria() {
+        return $this->materia;
+    }
+
+    public function getGrupo() {
+        return $this->grupo;
+    }
 }
-?>
