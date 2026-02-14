@@ -1,25 +1,32 @@
 <?php
-// incluir clase
+// incluir la clase estudiante
 require_once "estudiante.php";
 
-// variable para guardar el objeto
-$estudiante = null;
+// iniciar sesión
+session_start();
 
-// si se envió el formulario
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-    // recibir datos del formulario
-    $matricula = $_POST["matricula"];
-    $nombre = $_POST["nombre"];
-    $materia = $_POST["materia"];
-    $grupo = $_POST["grupo"];
-
-    // crear nuevo objeto
-    $estudiante = new Estudiante($matricula, $nombre, $materia, $grupo);
+// crear lista de estudiantes si no existe
+if (!isset($_SESSION["estudiantes"])) {
+    $_SESSION["estudiantes"] = [];
 }
-?>
-  
 
+// si se envía el formulario
+      if ($_SERVER["REQUEST_METHOD"] == "POST") {
+          // obtener datos del formulario
+          $matricula = $_POST["matricula"];
+          $nombre = $_POST["nombre"];
+          $materia = $_POST["materia"];
+          $grupo = $_POST["grupo"];
+          // crear objeto (estudiante)
+          $nuevoEstudiante = new Estudiante($matricula, $nombre, $materia, $grupo);
+
+          $_SESSION["estudiantes"][] = $nuevoEstudiante;
+
+          header("Location: index.php");
+          exit();
+      }
+    ?>
+        
 <!DOCTYPE html>  
 <html lang="es">
   
@@ -69,6 +76,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           <label class="form-label">Grupo</label>
           <input type="text" name="grupo" class="form-control" required>
         </div>
+        
 <!-- botón crear estudiante -->
         <button type="submit" class="btn btn-primary">
           Crear estudiante
@@ -76,24 +84,34 @@ href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       </form>
     </div>
   </div>
-
-  
+ 
 <hr>
+    
+<!-- lista de estudiantes -->
+    <?php if (!empty($_SESSION["estudiantes"])): ?>
 
-  <!-- mensaje de creado -->
-  <?php if ($estudiante != null): ?>
-    <div class="alert alert-success">
-      Estudiante creado correctamente
+    <h3 class="mt-4">Lista de estudiantes</h3>
+
+    <div class="row">
+    <?php foreach ($_SESSION["estudiantes"] as $e): ?>
+      <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title"><?= $e->getNombre() ?></h5>
+            <p class="card-text">
+              <strong>Matrícula:</strong> <?= $e->getMatricula() ?><br>
+              <strong>Materia:</strong> <?= $e->getMateria() ?><br>
+              <strong>Grupo:</strong> <?= $e->getGrupo() ?>
+            </p>
+          </div>
+        </div>
+      </div>
+    <?php endforeach; ?>
     </div>
-<!-- estudiantes -->
-  <h5 class="card-title"><?= $estudiante->getNombre() ?></h5>
 
-  <strong>Matrícula:</strong> <?= $estudiante->getMatricula() ?><br>
-  <strong>Materia:</strong> <?= $estudiante->getMateria() ?><br>
-  <strong>Grupo:</strong> <?= $estudiante->getGrupo() ?><br>
-  <?php endif; ?>
+    <?php endif; ?>
 
-</div> <!-- container -->
+</div>
 
 <script 
   src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
