@@ -1,40 +1,51 @@
 <?php
-// incluir la clase estudiante
+// Incluir la clase Estudiante
 require_once "estudiante.php";
 
-// iniciar sesión
+// Iniciar sesión
 session_start();
 
-// crear lista de estudiantes si no existe
+// Crear lista de estudiantes si no existe
 if (!isset($_SESSION["estudiantes"])) {
     $_SESSION["estudiantes"] = [];
 }
 
-// si se envía el formulario
+// Si se envía el formulario
       if ($_SERVER["REQUEST_METHOD"] == "POST") {
-          // obtener datos del formulario
+          // Obtener datos del formulario
           $matricula = $_POST["matricula"];
           $nombre = $_POST["nombre"];
           $materia = $_POST["materia"];
           $grupo = $_POST["grupo"];
-          // crear objeto (estudiante)
+          // Instanciar nuevo objeto de la clase Estudiante con los datos del formulario
           $nuevoEstudiante = new Estudiante($matricula, $nombre, $materia, $grupo);
-
+          // Agregar nuevo objeto a la lista de estudiantes
           $_SESSION["estudiantes"][] = $nuevoEstudiante;
 
           header("Location: index.php");
           exit();
       }
+        // Si se quiere eliminar un estudiante
+        if (isset($_GET["eliminar"])) {
+            $indice = $_GET["eliminar"];
+            // Verificar que exista en la lista de estudiantes
+            if (isset($_SESSION["estudiantes"][$indice])) {
+                unset($_SESSION["estudiantes"][$indice]); // eliminar estudiante
+                $_SESSION["estudiantes"] = array_values($_SESSION["estudiantes"]); // reordenar estudiantes
+            }
+
+            header("Location: index.php");
+            exit();
+        }
     ?>
         
 <!DOCTYPE html>  
 <html lang="es">
   
-<!-- head -->
+<!-- Head -->
   <head>
     <meta charset="UTF-8">
-    <!-- responsive degign -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- diseño responsivo -->
     
     <title>Estudiantes</title>
     
@@ -43,10 +54,10 @@ href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet">
   </head>
   
-  <!-- body -->
+<!-- Body -->
   <body class="bg-light">
     
-  <!-- navbar -->    
+  <!-- Navbar -->    
   <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container">
       <span class="navbar-brand">Gestión de Estudiantes</span>
@@ -59,7 +70,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
     <div class="card-body">
       <h5 class="card-title mb-3">Crear nuevo estudiante</h5>
       
-<!-- formulario -->
+<!-- Formulario -->
       <form method="POST">
         <div class="mb-3">
           <label class="form-label">Matrícula</label>
@@ -81,7 +92,7 @@ href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           <input type="text" name="grupo" class="form-control" required>
         </div>
         
-<!-- botón crear estudiante -->
+  <!-- Botón crear estudiante -->
         <button type="submit" class="btn btn-primary">
           Crear estudiante
         </button>
@@ -91,13 +102,13 @@ href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
  
 <hr>
     
-<!-- lista de estudiantes -->
-    <?php if (!empty($_SESSION["estudiantes"])): ?>
+<!-- Lista de estudiantes -->
+    <?php if (!empty($_SESSION["estudiantes"])): ?> <!-- si hay estudiantes -->
 
     <h3 class="mt-4">Lista de estudiantes</h3>
-
+  <!-- Mostrar los datos de cada objeto usando el método get de la clase Estudiante -->
     <div class="row">
-    <?php foreach ($_SESSION["estudiantes"] as $e): ?>
+    <?php foreach ($_SESSION["estudiantes"] as $index => $e): ?>
       <div class="col-md-4 mb-3">
         <div class="card shadow-sm">
           <div class="card-body">
@@ -107,6 +118,12 @@ href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
               <strong>Materia:</strong> <?= $e->getMateria() ?><br>
               <strong>Grupo:</strong> <?= $e->getGrupo() ?>
             </p>
+            <!-- Botón para eliminar estudiante -->
+            <a href="index.php?eliminar=<?= $index ?>" 
+               class="btn btn-danger btn-sm"
+               onclick="return confirm('¿Borrar este estudiante?')">
+               Borrar
+            </a>
           </div>
         </div>
       </div>
