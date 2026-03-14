@@ -1,6 +1,8 @@
 <?php
-// Incluir la clase Estudiante
+// Incluir la clase Estudiante y sus subclases
 require_once "estudiante.php";
+require_once "estudianteLicenciatura.php";
+require_once "estudiantePosgrado.php";
 
 // Iniciar sesión
 session_start();
@@ -17,8 +19,47 @@ if (!isset($_SESSION["estudiantes"])) {
           $nombre = $_POST["nombre"];
           $materia = $_POST["materia"];
           $grupo = $_POST["grupo"];
-          // Instanciar nuevo objeto de la clase Estudiante con los datos del formulario
-          $nuevoEstudiante = new Estudiante($matricula, $nombre, $materia, $grupo);
+          // Instanciar nuevo objeto con los datos del formulario
+        $tipo = $_POST["tipo"];
+
+        if ($tipo == "licenciatura") {
+
+        $tetramestre = $_POST["tetramestre"];
+
+        $nuevoEstudiante = new EstudianteLicenciatura(
+        $matricula,
+        $nombre,
+        $materia,
+        $grupo,
+        $tetramestre
+        );
+
+        }
+
+        elseif ($tipo == "posgrado") {
+
+        $especialidad = $_POST["especialidad"];
+
+        $nuevoEstudiante = new EstudiantePosgrado(
+        $matricula,
+        $nombre,
+        $materia,
+        $grupo,
+        $especialidad
+        );
+
+        }
+
+        else {
+
+        $nuevoEstudiante = new Estudiante(
+        $matricula,
+        $nombre,
+        $materia,
+        $grupo
+        );
+
+        }
           // Agregar nuevo objeto a la lista de estudiantes
           $_SESSION["estudiantes"][] = $nuevoEstudiante;
 
@@ -91,6 +132,17 @@ href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           <label class="form-label">Grupo</label>
           <input type="text" name="grupo" class="form-control" required>
         </div>
+
+        <div class="mb-3">
+        <label class="form-label">Tipo de estudiante</label>
+        <select name="tipo" class="form-control" id="tipo">
+        <option value="general">General</option>
+        <option value="licenciatura">Licenciatura</option>
+        <option value="posgrado">Posgrado</option>
+        </select>
+        </div>
+
+        <div class="mb-3" id="campoExtra"></div>
         
   <!-- Botón crear estudiante -->
         <button type="submit" class="btn btn-primary">
@@ -116,7 +168,18 @@ href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
             <p class="card-text">
               <strong>Matrícula:</strong> <?= $e->getMatricula() ?><br>
               <strong>Materia:</strong> <?= $e->getMateria() ?><br>
-              <strong>Grupo:</strong> <?= $e->getGrupo() ?>
+              <strong>Grupo:</strong> <?= $e->getGrupo() ?><br>
+              <strong>Tipo:</strong> <?= $e->getTipo() ?><br>
+
+              <?php
+              if ($e instanceof EstudianteLicenciatura) {
+              echo "<strong>Tetramestre:</strong> " . $e->getTetramestre();
+              }
+
+              if ($e instanceof EstudiantePosgrado) {
+              echo "<strong>Especialidad:</strong> " . $e->getEspecialidad();
+              }
+              ?>
             </p>
             <!-- Botón para eliminar estudiante -->
             <a href="index.php?eliminar=<?= $index ?>" 
@@ -135,7 +198,36 @@ href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 </div>
 
 <script 
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
 </script>
+    <!-- Script para mostrar campo extra según el tipo de estudiante -->
+    <script>
+
+    const tipo = document.getElementById("tipo")
+    const campoExtra = document.getElementById("campoExtra")
+
+    tipo.addEventListener("change", function(){
+
+    if(this.value === "licenciatura"){
+    campoExtra.innerHTML = `
+    <label class="form-label">Tetramestre</label>
+    <input type="number" name="tetramestre" class="form-control">
+    `
+    }
+
+    else if(this.value === "posgrado"){
+    campoExtra.innerHTML = `
+    <label class="form-label">Especialidad</label>
+    <input type="text" name="especialidad" class="form-control">
+    `
+    }
+
+    else{
+    campoExtra.innerHTML = ""
+    }
+
+    })
+
+    </script>
 </body>
 </html>

@@ -2,11 +2,11 @@
 // Clase Estudiante. Representa a un estudiante con sus datos atributos y métodos.
 class Estudiante {
 
-    // Atributos
-    private $matricula;
-    private $nombre;
-    private $materia;
-    private $grupo;
+    // Atributos protegidos para que las subclases puedan usarlos
+    protected $matricula;
+    protected $nombre;
+    protected $materia;
+    protected $grupo;
 
     // Constructor. Se ejecuta al crear un nuevo objeto de la clase.
     public function __construct($matricula, $nombre, $materia, $grupo) {
@@ -16,7 +16,7 @@ class Estudiante {
         $this->grupo = $grupo;
         
     }
-    // Métodos getters para obtener los valores de atributos privados
+    // Métodos getters para obtener los valores de atributos protected
     public function getNombre() {
         return $this->nombre;
     }
@@ -31,5 +31,10 @@ class Estudiante {
 
     public function getGrupo() {
         return $this->grupo;
+    }
+
+    // método que puede sobrescribirse
+    public function getTipo() {
+        return "General";
     }
 }
